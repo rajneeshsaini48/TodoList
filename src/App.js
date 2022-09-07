@@ -1,23 +1,49 @@
-import logo from './logo.svg';
-import './App.css';
+// import './App.css';
+import Todo from "./Component/Todo";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { useState, useEffect } from "react";
+import Addtodo from "./Component/Addtodo";
 
 function App() {
+  let initTodo;
+  if (localStorage.getItem("todos") === null) {
+    initTodo = [];
+  } else {
+    initTodo = JSON.parse(localStorage.getItem("todos"));
+  }
+
+  const [todos, setTodos] = useState(initTodo);
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
+  const onDelete = (todo) => {
+    setTodos(
+      todos.filter((e) => {
+        return e !== todo;
+      })
+    );
+    localStorage.setItem("todos", JSON.stringify(todos));
+  };
+
+  const addTodo = (title, desc) => {
+    let Sno;
+    if (todos.length === 0) {
+      Sno = 0;
+    } else {
+      Sno = todos[todos.length - 1].Sno + 1;
+    }
+    const mytodo = {
+      Sno: Sno,
+      title: title,
+      desc: desc,
+    };
+    setTodos([...todos, mytodo]);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="App mx-4">
+      <Addtodo addTodo={addTodo} />
+      <Todo todos={todos} onDelete={onDelete} />
     </div>
   );
 }
